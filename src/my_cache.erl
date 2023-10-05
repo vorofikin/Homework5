@@ -13,14 +13,14 @@ insert(TableName, Key, Value, Ttl) ->
   ets:insert(TableName, {Key, Value, EndDateSec}).
 
 lookup(TableName, Key) ->
-  Value = ets:lookup(TableName, Key),
   CurrentUnixtime = get_unixtime(),
-  case Value of
+  case ets:lookup(TableName, Key) of
     [{Key, Value, EndDateSec}] when CurrentUnixtime =< EndDateSec -> Value;
     [{Key, _Value, _EndDateSec}] ->
       ets:delete(TableName, Key),
       undefined;
     [{Key, Value}] -> Value;
+    {Key, Value} -> Value;
     _ -> undefined
   end.
 
